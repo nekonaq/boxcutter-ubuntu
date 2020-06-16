@@ -76,6 +76,20 @@ if [ "x${swapuuid}" != "x" ]; then
     /sbin/mkswap -U "${swapuuid}" "${swappart}"
 fi
 
+if [[ "$DISABLE_SWAP" =~ ^(true|yes|on|1|TRUE|YES|ON)$ ]]; then
+  echo '==> Disabling swap'
+  if [ -z "${swapuuid}" ]; then
+    swapfile="$( swapon --show=NAME --noheadings )"
+    /sbin/swapoff -a
+    if [ -n "$swapfile" ]; then
+      rm -f "$swapfile"
+    fi
+  else
+    /sbin/swapoff -a
+  fi
+  sed -i -e '\![[:space:]]\+swap[[:space:]]\+!d' /etc/fstab
+fi
+
 # Zero out the free space to save space in the final image
 dd if=/dev/zero of=/EMPTY bs=1M  || echo "dd exit code $? is suppressed"
 rm -f /EMPTY

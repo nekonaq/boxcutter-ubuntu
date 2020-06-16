@@ -1,0 +1,136 @@
+{
+  "builders": [
+    {
+      "type": "virtualbox-iso",
+      "boot_command": [
+        "{{ user `boot_command_prefix` }}",
+        "set gfxpayload=keep<enter>",
+        "linux /install/vmlinuz ",
+        "auto url=http://{{.HTTPIP}}:{{.HTTPPort}}/{{ user `preseed` }} ",
+        "fb=false ",
+        "language=en country=US locale={{ user `locale` }} ",
+        "console-setup/ask_detect=false ",
+        "keyboard-configuration/layoutcode=us keyboard-configuration/modelcode=pc105 ",
+        "hostname={{ user `hostname` }} ",
+        "passwd/user-fullname={{ user `ssh_fullname` }} ",
+        "passwd/username={{ user `ssh_username` }} ",
+        "passwd/user-password={{ user `ssh_password` }} ",
+        "passwd/user-password-again={{ user `ssh_password` }} ",
+        "quiet ---<enter>",
+        "initrd /install/initrd.gz<enter>",
+        "boot<enter>"
+      ],
+      "disk_size": "{{ user `disk_size` }}",
+      "guest_additions_path": "VBoxGuestAdditions_{{.Version}}.iso",
+      "guest_os_type": "{{ user `virtualbox_guest_os_type` }}",
+      "hard_drive_interface": "sata",
+      "headless": "{{ user `headless` }}",
+      "http_directory": "{{ user `http_directory` }}",
+      "iso_interface": "sata",
+      "iso_checksum": "{{ user `iso_checksum` }}",
+      "iso_checksum_type": "{{ user `iso_checksum_type` }}",
+      "iso_urls": [
+        "{{ user `iso_path` }}/{{ user `iso_name` }}",
+        "{{ user `iso_url` }}"
+      ],
+      "output_directory": "output-{{ user `vm_name` }}-virtualbox-iso",
+      "post_shutdown_delay": "1m",
+      "shutdown_command": "echo '{{ user `ssh_password` }}'|sudo -S shutdown -P now",
+      "ssh_password": "{{ user `ssh_password` }}",
+      "ssh_username": "{{ user `ssh_username` }}",
+      "ssh_wait_timeout": "10000s",
+      "vboxmanage": [
+        ["modifyvm", "{{.Name}}", "--firmware", "EFI"],
+        ["modifyvm", "{{.Name}}", "--chipset", "ich9"],
+        ["modifyvm", "{{.Name}}", "--graphicscontroller", "vmsvga"],
+        ["modifyvm", "{{.Name}}", "--nictype1", "virtio"],
+        ["modifyvm", "{{.Name}}", "--memory", "{{ user `memory` }}"],
+        ["modifyvm", "{{.Name}}", "--cpus", "{{ user `cpus` }}"]
+      ],
+      "virtualbox_version_file": ".vbox_version",
+      "vm_name": "{{user `vm_name`}}"
+    }
+  ],
+  "post-processors": [
+    {
+      "type": "vagrant",
+      "keep_input_artifact": false,
+      "output": "{{user `output_directory`}}/{{.Provider}}-{{user `vm_name`}}.box",
+      "vagrantfile_template": "{{ user `vagrantfile_template` }}"
+    }
+  ],
+  "provisioners": [
+    {
+      "environment_vars": [
+        "CLEANUP_PAUSE={{user `cleanup_pause`}}",
+        "CLEANUP_DOCS={{user `cleanup_docs`}}",
+        "DISABLE_SWAP={{user `disable_swap`}}",
+        "DISABLE_BOOT_SPLASH={{user `disable_boot_splash`}}",
+        "SET_LOCALE={{user `locale`}}",
+        "DEBIAN_FRONTEND=noninteractive",
+        "UPDATE={{user `update`}}",
+        "INSTALL_VAGRANT_KEY={{user `install_vagrant_key`}}",
+        "INSTALL_GUEST_ADDITIONS={{user `install_guest_additions`}}",
+        "SSH_USERNAME={{user `ssh_username`}}",
+        "SSH_PASSWORD={{user `ssh_password`}}",
+        "http_proxy={{user `http_proxy`}}",
+        "https_proxy={{user `https_proxy`}}",
+        "ftp_proxy={{user `ftp_proxy`}}",
+        "rsync_proxy={{user `rsync_proxy`}}",
+        "no_proxy={{user `no_proxy`}}"
+      ],
+      "execute_command": "echo '{{ user `ssh_password` }}' | {{.Vars}} sudo -E -S bash '{{.Path}}'",
+      "scripts": [
+        "{{user `script_directory`}}/update.sh",
+        "{{user `script_directory`}}/vagrant.sh",
+        "{{user `script_directory`}}/sshd.sh",
+        "{{user `script_directory`}}/virtualbox.sh",
+        "{{user `script_directory`}}/motd.sh",
+        "{{user `custom_script`}}",
+        "{{user `script_directory`}}/custom/grub.sh",
+        "{{user `script_directory`}}/custom/setlocale.sh",
+        "{{user `script_directory`}}/minimize.sh",
+        "{{user `script_directory`}}/cleanup.sh"
+      ],
+      "type": "shell",
+      "expect_disconnect": "true"
+    }
+  ],
+  "variables": {
+    "boot_command_prefix": "<esc><esc><enter><wait>",
+    "cleanup_pause": "",
+    "cleanup_docs": "false",
+    "disable_swap": "true",
+    "disable_boot_splash": "true",
+    "cpus": "1",
+    "script_directory": "script",
+    "custom_script": "custom-script.sh",
+    "disk_size": "65536",
+    "headless": "false",
+    "http_directory": "http",
+    "output_directory": "box",
+    "ftp_proxy": "{{env `ftp_proxy`}}",
+    "http_proxy": "{{env `http_proxy`}}",
+    "https_proxy": "{{env `https_proxy`}}",
+    "install_vagrant_key": "true",
+    "iso_checksum": "a5b0ea5918f850124f3d72ef4b85bda82f0fcd02ec721be19c1a6952791c8ee8",
+    "iso_checksum_type": "sha256",
+    "iso_name": "ubuntu-18.04.1-server-amd64.iso",
+    "iso_path": "iso",
+    "iso_url": "http://cdimage.ubuntu.com/ubuntu/releases/18.04/release/ubuntu-18.04.1-server-amd64.iso",
+    "locale": "en_US.UTF-8",
+    "memory": "512",
+    "no_proxy": "{{env `no_proxy`}}",
+    "preseed" : "preseed.cfg",
+    "rsync_proxy": "{{env `rsync_proxy`}}",
+    "hostname": "localhost",
+    "ssh_fullname": "vagrant",
+    "ssh_password": "vagrant",
+    "ssh_username": "vagrant",
+    "update": "false",
+    "vagrantfile_template": "",
+    "install_guest_additions": "true",
+    "virtualbox_guest_os_type": "Ubuntu_64",
+    "vm_name": "ubuntu1804"
+  }
+}

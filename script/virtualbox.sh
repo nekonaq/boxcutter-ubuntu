@@ -2,7 +2,7 @@
 
 SSH_USER=${SSH_USERNAME:-vagrant}
 
-if [[ $PACKER_BUILDER_TYPE =~ virtualbox ]]; then
+if [[ $PACKER_BUILDER_TYPE =~ virtualbox ]] && [[ "$INSTALL_GUEST_ADDITIONS" =~ ^(true|yes|on|1|TRUE|YES|ON)$ ]]; then
     echo "==> Installing VirtualBox guest additions"
     # Assuming the following packages are installed
     # apt-get install -y linux-headers-$(uname -r) build-essential perl

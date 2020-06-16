@@ -1,0 +1,72 @@
+# -*- mode: org; buffer-read-only: nil; truncate-lines: nil; fill-column: 84 -*-
+#+STARTUP: showall
+#+OPTIONS: ^:{} toc:nil num:nil date:nil author:nil
+#+BIND: org-html-toplevel-hlevel 3
+#+TITLE: Packer templates for Ubuntu 18 / VirtualBox
+
+* {{{title}}}
+
+** 概要
+
+   このリポジトリは Ubuntu の vagrant box をビルドする環境である。
+   [[https://github.com/boxcutter/ubuntu][boxcutter-ubuntu]] をフォークし、プライベート・ブランチとして育てている。
+
+   オリジナルに対する大きな変更点:
+
+   - ビルド工程のポリシー
+
+     + 現時点で対応しているのは Ubuntu 18.04 のみ。
+
+     + 対応プロバイダは virtualbox のみ。
+
+     + システムのアップデートは行わない。
+
+     + デスクトップ版には対応しない。
+
+     + packer コマンドを直接タイプしてビルドする。
+     ディレクトリ =bin= 以下のスクリプトおよび =Makefile= は対応修正していない。
+
+     + 動作確認しているのはビルドのみ。
+     assuer deliver clean test には対応していない。
+
+
+   - VirtualBox 設定
+     + EFI モード
+     + チップセット ICH9
+     + グラフィクス・コントローラー VMSVGA
+     + HDD ストレージ・コントローラー SATA
+     + ISO ストレージ・コントローラー SATA
+     + 仮想CPU数 1
+     + メモリ 1GB
+     + ディスク容量 40GB
+
+   - Ubuntu システム設定
+     + ディスク・レイアウトは regular (LVM を使わない)
+     + パーティション分割なし ( =/root= と =/boot/efi= のみ)
+     + スワップなし
+     + ホスト名 localhost
+     + キーボードレイアウト us
+     + システム・タイムゾーン UTC
+     + システム・ロケール C.UTF-8
+     + man と doc を削除しない
+     + システムのアップデートを行わない
+     + ブート時のスプラッシュを表示しない
+     + ブート時の grub タイムアウト 8秒
+     + VBoxGuestAdditions をインストールする
+
+
+** ビルドの準備
+
+   - ビルドを行う前に次のパッケージをインストールする。
+     + VirtualBox
+
+   - インストール用 CD イメージを [[http://cdimage.ubuntu.com/ubuntu/releases/][cdimage.ubuntu]] からダウンロードしてディレクトリ 'iso' の下に置く。
+
+
+** ビルド手順の例
+
+   Ubuntu 18.04.4 の box イメージをビルドするには:
+   : packer build -color=false -var-file ubuntu/18.04.4.json ubuntu/ubuntu18.json
+
+   できあがった box を vagrant にインポート:
+   : vagrant box add box/virtualbox-ubuntu1804.box --name custom/ubuntu1804-18.04.4.2007.4
