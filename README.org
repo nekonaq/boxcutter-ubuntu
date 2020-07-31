@@ -58,15 +58,20 @@
 ** ビルドの準備
 
    - ビルドを行う前に次のパッケージをインストールする。
-     + VirtualBox
+     + VirtualBox ~=6.1.12
+     + packer ~=1.6.0
+     + ansible ~=2.8.10
 
    - インストール用 CD イメージを [[http://cdimage.ubuntu.com/ubuntu/releases/][cdimage.ubuntu]] からダウンロードしてディレクトリ 'iso' の下に置く。
 
 
 ** ビルド手順の例
 
-   Ubuntu 18.04.4 の box イメージをビルドするには:
-   : packer build -color=false -var-file ubuntu/18.04.4.json ubuntu/ubuntu18.json
+   - box ファイルをビルドする:
+     : make box.build
 
-   できあがった box を vagrant にインポート:
-   : vagrant box add box/virtualbox-ubuntu1804.box --name custom/ubuntu1804-18.04.4.2007.4
+   - box ファイルをビルドしてから vagrant box add する:
+     : make box.add
+
+   - Vagrantfile.template から Vagrantfile を生成する。
+     : make Vagrantfile

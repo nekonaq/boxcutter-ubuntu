@@ -1,0 +1,8 @@
+{
+  "vm_name": "ubuntu1804-minserver",
+  "ssh_fullname": "ubuntu",
+  "ssh_username": "ubuntu",
+  "ssh_password": "ubuntu",
+  "install_vagrant_key": "false",
+  "install_guest_additions": "false"
+}

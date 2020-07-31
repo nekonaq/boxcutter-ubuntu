@@ -1,0 +1,13 @@
+# 主にデバッグのために、ホストの変数一覧を表示する
+# ansible-playbook ansible/facts.min -l localhost
+# ansible-playbook ansible/facts.min -l HOST
+#
+---
+- hosts: all
+  gather_subset: min
+  tasks:
+    - debug: var=hostvars[inventory_hostname]
+
+## Local Variables: ***
+## mode: yaml ***
+## End: ***

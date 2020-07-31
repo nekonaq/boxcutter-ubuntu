@@ -1,7 +1,7 @@
 #!/bin/bash -eux
 
 SSH_USER=${SSH_USERNAME:-vagrant}
-DISK_USAGE_BEFORE_CLEANUP=$(df -h)
+DISK_USAGE_BEFORE_CLEANUP=$(df -h | grep -v -e '^tmpfs' -e '^udev')
 
 # Make sure udev does not block our network - http://6.ptmc.org/?p=164
 echo "==> Cleaning up udev rules"
@@ -102,4 +102,4 @@ echo "==> Disk usage before cleanup"
 echo "${DISK_USAGE_BEFORE_CLEANUP}"
 
 echo "==> Disk usage after cleanup"
-df -h
+df -h | grep -v -e '^tmpfs' -e '^udev'

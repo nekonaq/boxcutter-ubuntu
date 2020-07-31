@@ -1,5 +1,6 @@
 /iso
-/vagrant
+/box
+/Vagrantfile
 .vagrant
 /packer_cache
 .tmpatlas

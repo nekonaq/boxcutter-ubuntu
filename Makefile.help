@@ -1,0 +1,27 @@
+define HELPTEXT =
+Please use 'make TARGET' where TARGET is one of
+
+  box.build     box ファイルをビルドする。
+  box.add       box ファイルをビルドしてから vagrant box add する。
+  Vagrant       Vagrant.template から Vagrantfile を生成する。
+
+
+Environment variables:
+
+  UBUNTU_VERSION    = $(UBUNTU_VERSION)
+  BOX_RELEASE       = $(BOX_RELEASE)
+  BOX_PREFIX        = $(BOX_PREFIX)
+  BOX_VARIANT       = $(BOX_VARIANT)
+
+  BOX_VM_NAME       = $(BOX_VM_NAME)
+  BOX_NAME          = $(BOX_NAME)
+  BOX_FILE_BASE     = $(BOX_FILE_BASE)
+  BOX_FILE          = $(BOX_FILE)
+
+  PACKER_CONFIGS    = $(strip $(PACKER_CONFIGS))
+  PACKER_VARS       = $(strip $(PACKER_VARS))
+
+  VAGRANT_BOX_NAME  = $(VAGRANT_BOX_NAME)
+
+endef
+export HELPTEXT

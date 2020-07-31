@@ -1,0 +1,38 @@
+# coding: utf-8
+
+Vagrant.configure("2") do |nodes|
+
+  nodes.vm.define '$VAGRANT_VM_NAME' do |config|
+    config.vm.box = "$VAGRANT_BOX_NAME"
+    # config.vm.box_check_update = false
+
+    config.vm.hostname = '$VAGRANT_VM_NAME'
+    config.vm.provider "virtualbox" do |vb|
+      vb.name = '$VAGRANT_VM_NAME'
+      vb.memory = "2048"
+      # vb.gui = true
+    end
+
+    if Vagrant.has_plugin?('vagrant-vbguest')
+      config.vbguest.auto_update = true
+      # config.vbguest.no_install = true
+    end
+
+    # config.ssh.username = 'ubuntu'
+    # config.ssh.password = 'ubuntu'
+
+    config.vm.network :forwarded_port, id: 'ssh', 
+                      guest: 22, host: 2204,
+                      auto_correct: true
+
+    # config.vm.network 'private_network', ip: '192.168.8.247',
+    #                   auto_config: true
+
+    config.vm.synced_folder '.', '/vagrant', type: 'virtualbox'
+    # config.vm.synced_folder '.', '/vagrant', disabled: true
+  end
+end
+
+## Local Variables: ***
+## mode: ruby ***
+## End: ***
